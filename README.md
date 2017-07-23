@@ -15,6 +15,8 @@ Specific questions and goals are:
 
 ### Preliminary analysis
 
+![](figures/hist_polarity.png)
+
 Some insights from sentiment analysis:
 
 1. A rather simple approach is to state whether a document is positive and negative, that is, the *polarity* of a document. Or in other words, the measure of positive or negative tweets?
