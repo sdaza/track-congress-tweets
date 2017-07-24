@@ -31,7 +31,7 @@ I analyzed 32497 tweets, from Democrats and Republican members. Most of the twee
 
 ![](figures/hist_polarity.png)
 
-The average of the polarity score is 0.11. This mean that on average each tweet is rather neutral, although includes slightly more positive words. Democrats seems to have a higher proportion of *neutral* and negative words than Republicans.
+The average of the polarity score is 0.11. This mean that on average each tweet is rather neutral, although includes slightly more positive words. Democrats seems to have a higher proportion of *neutral* and negative words than Republicans, what is confirm by comparing average polarity by party:  0.07 among Democrats, and 0.17 for Republicans.
 
 ![](figures/trend_polarity.png)
 
