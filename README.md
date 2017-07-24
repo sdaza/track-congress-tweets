@@ -5,9 +5,9 @@ American Politics has become polarized over the past quarter-century. Research h
 
 A polarized political environment might have negative consequences, especially when the control of the executive and legislative branches are split among cohesive parties. Some of them include a reduction of the number of compromises that parties are willing to take, gridlock and **less legislative productivity**,  less policy innovation, and inhibition of majority rule. All these scenarios implied negative consequences for citizens and people directly or indirectly affected by the legislation.
 
-In this project, I propose to create an index of polarization and political mood of Congress members by analyzing their tweets as a more fine-grained measure to track legislators' behavior and explore their consequences of the political environment on legislation practices and outcomes.
+In this project, I propose to create an index of polarization and political mood of Congress members by analyzing their tweets. The goal is to provide an alternative and fine-grained measure - that supplements traditional ones - to track congress polarization and explore their consequences on legislation practices and outcomes.
 
-The goals of this project are:
+The goals of the project are:
 
 1. To track the level of positivity and negativity of daily congress members tweets using **sentiment analysis** (i.e., extraction of *emotional intent* from text)
 2. Create a index of polarization from congress tweets. After adjusting subjectivity lexicons and assess text classification, to define a method to classify tweets every day and create a polarization index.
@@ -21,7 +21,8 @@ Daily tweet files and meta information on congress members are in JSON format.
 
 ### Preliminary analysis
 
-This preliminary analysis
+This very preliminary analysis uses tweets from June 21 to July 21 in 2017. The objective is to estimate the polarity of tweets, that is, the number of, and to examine their variability and describe the most frequent words used by polarity and political party.
+
 
 1. A rather simple approach is to state whether a document is positive and negative, that is, the *polarity* of a document. Or in other words, the measure of positive or negative tweets?
 
@@ -43,10 +44,9 @@ In political field, it is used to keep track of political view, to detect consis
 
 ### Next steps
 
-analysis shown in this proposal are very preliminary (e.g., this is my first time doing this kind of analysis.
-
-1. T
-2.
+1. To use different subjectivity lexicons to assess robustness of classification, and adapt them accordingly to capture better the nature of the tweets by Congress member
+2. To use topic modeling techniques to create a polarization index.
+3. To use clustering...
 
 ### References
 
