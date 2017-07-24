@@ -21,7 +21,11 @@ Daily tweet files and meta information on congress members are in JSON format.
 
 ### Preliminary analysis
 
-This very preliminary analysis uses tweets from June 21 to July 21 in 2017. The objective is to estimate the polarity of tweets, that is, the number of, and to examine their variability and describe the most frequent words used by polarity and political party.
+This  analysis uses congress tweets from June 21 to July 21, 2017. The objective is to estimate the polarity of tweets, that is, the number of, and to examine their variability and describe the most frequent words used by polarity and political party. This is a first step in defining a polarization index.
+
+After collecting tweets of the period, I kept only those coming from accounts that match metadata for all the accounts the project follows for tweet collection (e.g., party affiliation, name). Then, I cleaned tweets by removing retweets, URLs, usernames. A next step will be to consider (punctuation based)emoticons and emojis.
+
+I used the polarity function from package `qdap` to scan for positive and negative word within a subjectivity lexicon and obtain polarity scores.
 
 
 1. A rather simple approach is to state whether a document is positive and negative, that is, the *polarity* of a document. Or in other words, the measure of positive or negative tweets?
@@ -45,6 +49,7 @@ In political field, it is used to keep track of political view, to detect consis
 ![](figures/words_d.png)
 ![](figures/words_r.png)
 
+First time, but this is exactly what I look for, to use machine learni
 ### Next steps
 
 1. To use different subjectivity lexicons to assess robustness of classification, and adapt them accordingly to capture better the nature of the tweets by Congress member

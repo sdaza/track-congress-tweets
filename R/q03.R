@@ -4,6 +4,7 @@
 
 #+ clear working space
 rm(list=ls(all=TRUE))
+path <- "/Users/sdaza/Google Drive/github/i_proposal/figures"
 
 #+ load libraries
 library(jsonlite)
@@ -107,7 +108,7 @@ dat <- dat[!is.na(name)] # for now remove unmatched cases
 nrow(dat) / 58778 # 70% of tweets
 
 ##################################
-# clean tweets before analyzing
+#+ clean tweets before analyzing
 ##################################
 
 dat[, otext := text]
@@ -125,7 +126,7 @@ dat[, text := gsub("(f|ht)tp(s?)://\\S+", "", text, perl = TRUE)]
 dat[, text := gsub("^\\s+|\\s+$", "", text)]
 dat[, text := str_replace_all(text, "[[:punct:]]", " ")]
 dat[, text := str_replace_all(text, "[[:digit:]]", " ")]
-dat[, text := iconv(text, "latin1", "UTF-8",sub='')]
+# dat[, text := iconv(text, "latin1", "UTF-8",sub='')]
 dat[, text := tolower(text)]
 dat[, text := gsub("^ *|(?<= ) | *$", "", text, perl = TRUE)]
 
@@ -135,7 +136,7 @@ nrow(dat)
 rows <- sample(1:nrow(dat), 10)
 dat[rows, text, otext][1]
 
-# identify language
+#+ identify language
 dat[, lang := textcat(text, p = ECIMCI_profiles)]
 table(dat$lang, useNA = "ifany")
 
@@ -153,7 +154,7 @@ dat[, ymd := paste(year, month, day, sep = "-")]
 table(dat$ymd, useNA = "ifany")
 
 #######################
-# explore polarity
+#+ explore polarity
 #######################
 
 tables() # 25 MB
@@ -165,13 +166,19 @@ dat[, zpolarity := scale(pol$all$polarity)]
 summary(dat$polarity)
 summary(dat$zpolarity)
 
+
+
+png(file = paste0("/Users/sdaza/Google Drive/github/i_proposal/figures/" , "hist_polarity.png"),width=400, height=350)
 ggplot(dat[party != "I"], aes(x = polarity, group = party, fill = party)) + theme_minimal() +
  geom_histogram(aes(y=..count../sum(..count..)), position = "identity",  binwidth = 0.25, alpha = 0.5) +
- labs(y = "Proportion", x = "Raw Polarity")
+ labs(y = "Proportion", x = "Raw Polarity", title = "Histogram Raw Polarity Score by Party")
+dev.off()
 
+png(file = paste0("/Users/sdaza/Google Drive/github/i_proposal/figures/" , "hist_zpolarity.png"),width=400, height=350)
 ggplot(dat[party != "I"], aes(x = zpolarity, group = party, fill = party)) + theme_minimal() +
  geom_histogram(aes(y=..count../sum(..count..)), position = "identity",  binwidth = 0.60, alpha = 0.5) +
- labs(y = "Proportion", x = "Z Polarity")
+ labs(y = "Proportion", x = "Z Polarity", title = "Histogram Standardized Polarity Score by Party")
+dev.off()
 
 dat[party != "I", .(avg_polarity = Mean(polarity)), party]
 dat[party != "I", .(avg_zpolarity = Mean(zpolarity)), party]
@@ -179,15 +186,19 @@ dat[party != "I", .(avg_zpolarity = Mean(zpolarity)), party]
 # polarity by day
 agg <- dat[party != "I", .(polarity = Mean(polarity), zpolarity = Mean(zpolarity)), .(party, ymd)]
 
+png(file = paste0("/Users/sdaza/Google Drive/github/i_proposal/figures/" , "trend_polarity.png"), width = 400, height = 350)
 ggplot(agg, aes(x = ymd, y = polarity, group = party, colour = party, fill = party)) + theme_minimal() +
       geom_line() +  geom_point() +
       theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
       labs(x = "", y = "Raw Polarization", title = "Polarization Score by Day and Party")
+dev.off()
 
+png(file = paste0("/Users/sdaza/Google Drive/github/i_proposal/figures/" , "trend_zpolarity.png"), width = 400, height = 350)
 ggplot(agg, aes(x = ymd, y = zpolarity, group = party, colour = party, fill = party)) + theme_minimal() +
       geom_line() +  geom_point() +
       theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
       labs(x = "", y = "Z Polarization", title = "Standardized Polarization Score by Day and Party")
+dev.off()
 
 # some checks!
 dat[polarity < 0 & party == "D" & ymd == "2017-6-26", .(text, polarity)][2]
@@ -215,14 +226,15 @@ comparison.cloud(all.tdm.m, max.words = 100, colors = c("darkred", "darkgreen"))
 
 }
 
+png(file = paste0("/Users/sdaza/Google Drive/github/i_proposal/figures/" , "words_r.png"), width = 400, height = 350)
 createWordCloud(dat[party == "R"])
+dev.off()
+
+png(file = paste0("/Users/sdaza/Google Drive/github/i_proposal/figures/" , "words_d.png"), width = 400, height = 350)
 createWordCloud(dat[party == "D"])
+dev.off()
 
 ####################
 # end
 ###################
-
-
-
-
 
