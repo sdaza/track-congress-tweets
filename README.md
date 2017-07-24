@@ -37,8 +37,7 @@ The figure below show the average polarity score by Political party and day.
 
 ![](figures/trend_polarity.png)
 
-As can be seen, the scores vary considerably over time. Positivity reaches a pick during the Independence Day, both parties converging on their positive tone.
-
+As can be seen, the scores vary considerably over time. Positivity reaches a pick during the Independence Day, both parties converging on their positive tone. The biggest difference between scores is observed on June 26th. Some of the most important headlines during that day was: Senate's version of Health Care Bill would increase the number of uninsured by 22 million by 2026.
 
 ##### Republicans
 
@@ -52,12 +51,11 @@ As can be seen, the scores vary considerably over time. Positivity reaches a pic
 
 This is my first time doing text analysis, and I am very exciting about this project. Learning and applying data science techniques to get insights is exactly what I look for, that is why I applied to the Incubator. There is still a lot of.
 
-1. To use different subjectivity lexicons to assess robustness of classification, and adapt them accordingly to capture better the nature of the tweets by Congress member.
-2. To use topic modeling techniques to define a polarization index.
+1. To use different subjectivity lexicons to assess the robustness of classifications, and adapt them accordingly to better capture the nature of the tweetd
 3. To use clustering and topic modeling methods to get insighs on the content tweets by party, and characterize polarity scores.
-4. Create a Shiny app to process these data automatically and deliver it in a friendly format.
+4. Create a Shiny app to process these data automatically and deliver it in a friendly format by day, month, quarter.
 
-For now, I will continuing studying  text analysis methods, customization of lexicons, and relating polarity scores with hidden structures.
+For now, I will continuing studying text analysis methods, customization of lexicons, and relating polarity scores with hidden structures.
 
 ### References
 
