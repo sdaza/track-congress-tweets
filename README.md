@@ -33,27 +33,18 @@ I analyzed 32497 tweets, from Democrats and Republican members. Most of the twee
 
 The average of the polarity score is 0.11. This mean that on average each tweet is rather neutral, although includes slightly more positive words. Democrats seems to have a higher proportion of *neutral* and negative words than Republicans, what is confirm by comparing average polarity by party:  0.07 among Democrats, and 0.17 for Republicans.
 
+The figure below show the average polarity score by Political party and day.
+
 ![](figures/trend_polarity.png)
 
-1. A rather simple approach is to state whether a document is positive and negative, that is, the *polarity* of a document. Or in other words, the measure of positive or negative tweets?
+As can be seen, the scores vary considerably over time. Positivity reaches a pick during the Independence Day, both parties converging on their positive tone.
 
-I use the data provided by X.
-
-Polarity calculation is a number that is negative to represent a negative, zero to represent neutral and positive to present positive tone.
-
-Subjectivity lexicons: list of words associated with a particular emotional state.
-
-Qdap's scoring function for positive and negative word choice
-
-Sentiment analysis
-
-In political field, it is used to keep track of political view, to detect consistency and inconsistency between statements and actions at the government level. It can be used to predict election results as well!
 
 ##### Republicans
 
 ![](figures/words_r.png)
 
-##### Democratas
+##### Democrats
 
 ![](figures/words_d.png)
 
