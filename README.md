@@ -5,9 +5,9 @@ American Politics has become polarized over the past quarter-century. Research s
 
 A polarized political environment might have negative consequences, especially when the control of the executive and legislative branches are split among cohesive parties. Some of these consequences include a reduction of the number of compromises parties are willing to take, gridlock and **less legislative productivity**,  less policy innovation, and inhibition of the majority rule. All these scenarios implied negative consequences for citizens and people affected by laws.
 
-Can we measure and track Congress polarization using alternative sources of information, not only legislative votes? Are there sources of information we can update every day to measure polarization? In this project, I propose to create an index of polarization and political mood of Congress members by analyzing their tweets. The goal is to provide an alternative and fine-grained measure - that supplements traditional ones - to track Congress polarization and explore their consequences on legislation practices and outcomes. This proposal only shows preliminary and exploratory results analysis Congress tweets collected by a month.
+Can we measure and track Congress polarization using alternative sources of information, not only legislative votes? Are there sources of information we can update every day to measure polarization? In this project, I propose to create an index of polarization and political mood of Congress members by analyzing their tweets. The goal is to provide an alternative and fine-grained measure - that supplements traditional ones - to track Congress polarization and explore their consequences on legislation practices and outcomes. This proposal only shows initial results.
 
-In sum, the goals of the project are:
+The goals of the project are:
 
 1. To track the level of positivity and negativity of daily Congress members tweets using **sentiment analysis**.
 2. Create an index of polarization from Congress tweets. After adjusting subjectivity lexicons and assess text classification, to define a method to classify tweets every day and create a polarization index.

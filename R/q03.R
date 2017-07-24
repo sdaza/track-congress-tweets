@@ -226,7 +226,7 @@ all.tdm <- TermDocumentMatrix(all.corpus,
 all.tdm.m <- as.matrix(all.tdm)
 colnames(all.tdm.m) <- c("negative", "positive")
 comparison.cloud(all.tdm.m, max.words = 100, colors = c("darkred", "darkgreen"))
-text(x=0.5, y=1.01, title)
+text(x=0.5, y=1.02, title)
 }
 
 png(file = paste0("/Users/sdaza/Google Drive/github/i_proposal/figures/" , "words_r.png"), width = 400, height = 350)
