@@ -49,19 +49,24 @@ Sentiment analysis
 
 In political field, it is used to keep track of political view, to detect consistency and inconsistency between statements and actions at the government level. It can be used to predict election results as well!
 
+##### Republicans
 
-
-
-
-![](figures/words_d.png)
 ![](figures/words_r.png)
 
-First time, but this is exactly what I look for, to use machine learni
+##### Democratas
+
+![](figures/words_d.png)
+
 ### Next steps
 
-1. To use different subjectivity lexicons to assess robustness of classification, and adapt them accordingly to capture better the nature of the tweets by Congress member
-2. To use topic modeling techniques to create a polarization index.
-3. To use clustering...
+This is my first time doing text analysis, and I am very exciting about this project. Learning and applying data science techniques to get insights is exactly what I look for, that is why I applied to the Incubator. There is still a lot of.
+
+1. To use different subjectivity lexicons to assess robustness of classification, and adapt them accordingly to capture better the nature of the tweets by Congress member.
+2. To use topic modeling techniques to define a polarization index.
+3. To use clustering and topic modeling methods to get insighs on the content tweets by party, and characterize polarity scores.
+4. Create a Shiny app to process these data automatically and deliver it in a friendly format.
+
+For now, I will continuing studying  text analysis methods, customization of lexicons, and relating polarity scores with hidden structures.
 
 ### References
 
