@@ -149,7 +149,7 @@ nrow(dat)
 dat[, day := day(time)]
 dat[, month := month(time)]
 dat[, year := year(time)]
-dat[, ymd := paste(year, month, day, sep = "-")]
+dat[, ymd := ymd(paste(year, month, day, sep = "-"))]
 
 table(dat$ymd, useNA = "ifany")
 
@@ -184,6 +184,8 @@ dat[party != "I", .(avg_zpolarity = Mean(zpolarity)), party]
 
 # polarity by day
 agg <- dat[party != "I", .(polarity = Mean(polarity), zpolarity = Mean(zpolarity)), .(party, ymd)]
+agg[, ymd := factor(ymd, order = TRUE)]
+table(agg$ymd)
 
 png(file = paste0("/Users/sdaza/Google Drive/github/i_proposal/figures/" , "trend_polarity.png"), width = 400, height = 350)
 ggplot(agg, aes(x = ymd, y = polarity, group = party, colour = party, fill = party)) + theme_minimal() +
@@ -208,7 +210,7 @@ test[sample(1:nrow(test), 10), text]
 #+ explore tweets
 ######################
 
-createWordCloud <- function(dat) {
+createWordCloud <- function(dat, title = "World Cloud") {
 
 neg.tweets <- dat[zpolarity > 0, text]
 pos.tweets <- dat[zpolarity < 0, text]
@@ -224,21 +226,26 @@ all.tdm <- TermDocumentMatrix(all.corpus,
 all.tdm.m <- as.matrix(all.tdm)
 colnames(all.tdm.m) <- c("negative", "positive")
 comparison.cloud(all.tdm.m, max.words = 100, colors = c("darkred", "darkgreen"))
-
+text(x=0.5, y=1.01, title)
 }
 
 png(file = paste0("/Users/sdaza/Google Drive/github/i_proposal/figures/" , "words_r.png"), width = 400, height = 350)
-createWordCloud(dat[party == "R"])
+createWordCloud(dat[party == "R"], "Republicans")
 dev.off()
 
 png(file = paste0("/Users/sdaza/Google Drive/github/i_proposal/figures/" , "words_d.png"), width = 400, height = 350)
-createWordCloud(dat[party == "D"])
+createWordCloud(dat[party == "D"], "Democrats")
 dev.off()
 
-agg[ymd == "2017-6-25"]
-agg[ymd == "2017-6-26"]
-agg[ymd == "2017-6-27"]
+png(file = paste0("/Users/sdaza/Google Drive/github/i_proposal/figures/" , "zwords_r.png"), width = 400, height = 350)
+createWordCloud(dat[party == "R"], "Republicans")
+dev.off()
 
+png(file = paste0("/Users/sdaza/Google Drive/github/i_proposal/figures/" , "zwords_d.png"), width = 400, height = 350)
+createWordCloud(dat[party == "D"], "Democrats")
+dev.off()
+
+# explore an specific date
 createWordCloud(dat[party == "D" & ymd == "2017-6-26"])
 createWordCloud(dat[party == "R" & ymd == "2017-6-26"])
 

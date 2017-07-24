@@ -41,12 +41,8 @@ As can be seen, the scores vary considerably over time. Positivity reaches a pic
 
 Finally, I show word clouds by party based on a scaled polarity score. In the case of Republicans, most of the positive words are related to *award*, *protection*, *gold*, *innovation*, and *success*, while among Democrats there are more messages related to the Independence Day. Regarding the negative words, both parties highlight the tragedy of US marines in Mississippi, although Democrats emphasize terms such as *reject*, *threaten*, *flawed*, *corruption*. Performing topic modeling and clustering will provide more insights on these patterns.
 
-##### Republicans
 
 ![](figures/words_r.png)
-
-##### Democrats
-
 ![](figures/words_d.png)
 
 ### Next steps
