@@ -1,17 +1,17 @@
 
-# Tracking Congress Tweets
+# How Congress Political Polarization Evolves in Tweeter
 
 American Politics has become polarized over the past quarter-century. Research shows that American policy making has become more segregated and with little common voting, contrasting with what we observed decades ago where senators regularly crossed the aisle to get things done. This phenomenon is not only related to politicians but has also affected the public: according to data from the Pew Research Center, 45% of Republicans and 41% of Democrats think the other party is so dangerous that they consider it as a **threat to the nation**. Some commentators have also suggested that *media* and *new social platforms* exacerbate political polarization by spreading *fake news*.
 
 A polarized political environment might have negative consequences, especially when the control of the executive and legislative branches are split among cohesive parties. Some of these consequences include a reduction of the number of compromises parties are willing to take, gridlock and **less legislative productivity**,  less policy innovation, and inhibition of the majority rule. All these scenarios implied negative consequences for citizens and people affected by laws.
 
-Can we measure and track Congress polarization using alternative sources of information, not only legislative votes? Are there sources of information we can update every day to assess polarization? In this project, I propose to create an index of polarization and political mood of Congress members by analyzing their tweets. The goal is to provide an alternative and fine-grained measure - that supplements traditional ones - to track Congress polarization and explore their consequences on legislation practices and outcomes.
+Can we measure and track Congress polarization using alternative sources of information, not only legislative votes? Are there sources of information we can update every day to measure polarization? In this project, I propose to create an index of polarization and political mood of Congress members by analyzing their tweets. The goal is to provide an alternative and fine-grained measure - that supplements traditional ones - to track Congress polarization and explore their consequences on legislation practices and outcomes. This proposal only shows preliminary and exploratory results analysis Congress tweets collected by a month.
 
-The goals of the project are:
+In sum, the goals of the project are:
 
 1. To track the level of positivity and negativity of daily Congress members tweets using **sentiment analysis**.
 2. Create an index of polarization from Congress tweets. After adjusting subjectivity lexicons and assess text classification, to define a method to classify tweets every day and create a polarization index.
-4. To explore the association between positivity and polarization indexes with outcomes such as Congress approval ratings and proportion of bill passed.
+3. To explore the association between positivity and polarization indexes with outcomes such as Congress approval ratings and proportion of bill passed.
 
 ### Data
 
@@ -50,6 +50,7 @@ Finally, I show word clouds by party based on a scaled polarity score. In the ca
 This is my first time doing text analysis, and I am very excited about this project. Learning and applying data science techniques to get insights is exactly what I look for, that is why I applied to the Incubator. There is still a lot to do. I will follow these next steps:
 
 1. To use different subjectivity lexicons to assess the robustness of classifications, and adapt them accordingly to better capture the nature of tweets.
+2. To weight results by members rather than number of tweets.
 3. To use clustering and topic modeling methods to get insights on the content tweets by party, and characterize polarity scores in a more systematic way.
 4. Create a Shiny app to process these data automatically and deliver it in a friendly format by day and month.
 
