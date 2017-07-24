@@ -9,25 +9,23 @@ In this project, I propose to create an index of polarization and political mood
 
 The goals of this project are:
 
-1. To track the level of positivity and negativity of congress members tweets by day using **sentiment analysis** (i.e., extraction of *emotional intent* from text)
-2. Create a index of polarization of congress tweets. After adjusting subjectivity lexicons and assess text classification, to define a method to classify tweets every day.
+1. To track the level of positivity and negativity of daily congress members tweets using **sentiment analysis** (i.e., extraction of *emotional intent* from text)
+2. Create a index of polarization from congress tweets. After adjusting subjectivity lexicons and assess text classification, to define a method to classify tweets every day and create a polarization index.
 4. To explore the association between positivity and polarization indexes with outcomes such as congress approval ratings and proportion of bill passed.
 
 ### Data
 
 I use data collected by the developer Alex Litel, who created a tool ([Congressional Tweet Automator](https://github.com/alexlitel/congresstweets)) that stores every Congress member’s tweets every day, as been highlighted in a recent [Washington Post article](https://www.washingtonpost.com/news/politics/wp/2017/06/26/how-congress-tweets-visualized/?utm_term=.6e80a8653a5f).
 
-Daily tweet files and meta information on congress members is in JSON format.
+Daily tweet files and meta information on congress members are in JSON format.
 
 ### Preliminary analysis
 
+This preliminary analysis
+
 1. A rather simple approach is to state whether a document is positive and negative, that is, the *polarity* of a document. Or in other words, the measure of positive or negative tweets?
 
-
-
-
 I use the data provided by X.
-
 
 Polarity calculation is a number that is negative to represent a negative, zero to represent neutral and positive to present positive tone.
 
@@ -39,16 +37,18 @@ Sentiment analysis
 
 In political field, it is used to keep track of political view, to detect consistency and inconsistency between statements and actions at the government level. It can be used to predict election results as well!
 
-
 ![](figures/hist_polarity.png)
 ![](figures/zhist_polarity.png)
 
 
-
-
 ### Next steps
 
-The preliminary analysis shown in this proposal are very preliminary (e.g., this is my first time doing this kind of analysis.
+analysis shown in this proposal are very preliminary (e.g., this is my first time doing this kind of analysis.
 
 1. T
 2.
+
+### References
+
+- Kwartler, T. (2017). Text mining in practice with R.
+- Munzert, S. (2015). Automated data collection with R: a practical guide to Web scraping and text mining. Chichester, West Sussex, United Kingdom: John Wiley & Sons Inc.
