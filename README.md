@@ -39,8 +39,11 @@ Sentiment analysis
 In political field, it is used to keep track of political view, to detect consistency and inconsistency between statements and actions at the government level. It can be used to predict election results as well!
 
 ![](figures/hist_polarity.png)
-![](figures/zhist_polarity.png)
 
+![](figures/trend_polarity.png)
+
+![](figures/words_d.png)
+![](figures/words_r.png)
 
 ### Next steps
 
