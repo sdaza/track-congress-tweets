@@ -167,7 +167,6 @@ summary(dat$polarity)
 summary(dat$zpolarity)
 
 
-
 png(file = paste0("/Users/sdaza/Google Drive/github/i_proposal/figures/" , "hist_polarity.png"),width=400, height=350)
 ggplot(dat[party != "I"], aes(x = polarity, group = party, fill = party)) + theme_minimal() +
  geom_histogram(aes(y=..count../sum(..count..)), position = "identity",  binwidth = 0.25, alpha = 0.5) +
@@ -203,6 +202,8 @@ dev.off()
 # some checks!
 dat[polarity < 0 & party == "D" & ymd == "2017-6-26", .(text, polarity)][2]
 
+test <- dat[ymd == "2017-6-26" & polarity < 0, .(party, text)]
+test[sample(1:nrow(test), 10), text]
 ######################
 #+ explore tweets
 ######################
@@ -233,6 +234,13 @@ dev.off()
 png(file = paste0("/Users/sdaza/Google Drive/github/i_proposal/figures/" , "words_d.png"), width = 400, height = 350)
 createWordCloud(dat[party == "D"])
 dev.off()
+
+agg[ymd == "2017-6-25"]
+agg[ymd == "2017-6-26"]
+agg[ymd == "2017-6-27"]
+
+createWordCloud(dat[party == "D" & ymd == "2017-6-26"])
+createWordCloud(dat[party == "R" & ymd == "2017-6-26"])
 
 ####################
 # end
