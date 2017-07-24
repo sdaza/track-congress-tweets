@@ -21,11 +21,11 @@ Daily tweet files and meta information on congress members are in JSON format.
 
 ### Preliminary analysis
 
-This  analysis uses congress tweets from June 21 to July 21, 2017. The objective is to estimate the polarity of tweets, that is, the number of, and to examine their variability and describe the most frequent words used by polarity and political party. This is a first step in defining a polarization index.
+This  analysis uses congress tweets from June 21 to July 21, 2017. The objective is to estimate the polarity of tweets, that is, the measure of positive or negative intent in a writer's tone. The objective is to examine their variability and describe the most frequent words used by polarity and political party. This is just a first step in defining a more complex polarization index.
 
-After collecting tweets of the period, I kept only those coming from accounts that match metadata for all the accounts the project follows for tweet collection (e.g., party affiliation, name). Then, I cleaned tweets by removing retweets, URLs, usernames. A next step will be to consider (punctuation based)emoticons and emojis.
+After collecting tweets, I kept only those coming from accounts that match metadata for all the accounts the project follows for tweet collection (e.g., party affiliation, name). Then, I cleaned tweets by removing retweets (RT), URLs, usernames. Future versions of this analysis will process (punctuation based) emoticons and emojis.
 
-I used the polarity function from package `qdap` to scan for positive and negative word within a subjectivity lexicon and obtain polarity scores.
+I used the polarity function from package `qdap` to scan for positive and negative word within a list of words associated with a particular emotional (i.e.,  subjectivity lexicon) and obtain polarity scores. Negative numbers represent a negative tone, zero represents a neutral tone, and positive numbers a positive tone. I used the lexicon developed by Bing Liu at the University of Illinois at Chicago.
 
 
 1. A rather simple approach is to state whether a document is positive and negative, that is, the *polarity* of a document. Or in other words, the measure of positive or negative tweets?
