@@ -27,6 +27,11 @@ After collecting tweets, I kept only those coming from accounts that match metad
 
 I used the polarity function from package `qdap` to scan for positive and negative word within a list of words associated with a particular emotional (i.e.,  subjectivity lexicon) and obtain polarity scores. Negative numbers represent a negative tone, zero represents a neutral tone, and positive numbers a positive tone. I used the lexicon developed by Bing Liu at the University of Illinois at Chicago.
 
+I analyzed 32497 tweets, from Democrats and Republican members, 62% of them come from Democrats, and 72% from the House (28% from the Senate). Below I show the distribution of the polarity score:
+
+![](figures/hist_polarity.png)
+
+The average of the polarity score is 0.1072. This mean that on average each tweets are rather neutral, and include slightly more positive words.
 
 1. A rather simple approach is to state whether a document is positive and negative, that is, the *polarity* of a document. Or in other words, the measure of positive or negative tweets?
 
@@ -42,7 +47,7 @@ Sentiment analysis
 
 In political field, it is used to keep track of political view, to detect consistency and inconsistency between statements and actions at the government level. It can be used to predict election results as well!
 
-![](figures/hist_polarity.png)
+
 
 ![](figures/trend_polarity.png)
 
