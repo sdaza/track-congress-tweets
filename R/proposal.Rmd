@@ -4,23 +4,23 @@ output: rmarkdown::github_document
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 ---
 
-```{r, echo = FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(fig.path = "plots/R/proposal-")
 
 #+ load libraries
-# library(jsonlite)
-# library(qdap)
-# library(tm)
-# library(sdazar)
-# library(stringdist)
-# library(lubridate)
-# library(stringr)
-# library(tm)
-# library(qdap)
-# library(wordcloud)
-# library(ggplot2)
-# library(ggthemes)
-# library(textcat)
+library(jsonlite)
+library(qdap)
+library(tm)
+library(sdazar)
+library(stringdist)
+library(lubridate)
+library(stringr)
+library(tm)
+library(qdap)
+library(wordcloud)
+library(ggplot2)
+library(ggthemes)
+library(textcat)
 ```
 
 American Politics has become polarized over the past quarter-century. Research shows that American policy making has become more segregated and with little common voting, contrasting with what we observed decades ago where senators regularly crossed the aisle to get things done. This phenomenon is not only related to politicians but has also affected the public: according to data from the Pew Research Center, 45% of Republicans and 41% of Democrats think the other party is so dangerous that they consider it as a **threat to the nation**. Some commentators have also suggested that *media* and *new social platforms* exacerbate political polarization by spreading *fake news*.
@@ -43,6 +43,10 @@ Daily tweet files and meta information on Congress members are in JSON format.
 
 # Preliminary analysis
 
+```{r, echo = FALSE}
+
+
+```
 This analysis uses Congress tweets from June 21 to July 21, 2017. The objective is to estimate the polarity of tweets, that is, the measure of positive or negative intent in a writer's tone. The aim is to examine their variability and describe the most frequent words used by polarity and political party. This is just a first step in defining a more complex polarization index.
 
 After collecting tweets, I kept only those coming from accounts that match metadata for all the accounts the project follows for tweet collection (e.g., party affiliation, name). Then, I cleaned tweets by removing retweets (RT), URLs, usernames. Future versions of this analysis will process (punctuation based) emoticons and emojis.
