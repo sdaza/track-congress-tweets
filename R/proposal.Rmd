@@ -7,49 +7,21 @@ date: "`r format(Sys.time(), '%B %d, %Y')`"
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(fig.path = "plots/R/proposal-")
 
-#+ clear working space
-rm(list=ls(all=TRUE))
-
 #+ load libraries
-library(jsonlite)
-library(qdap)
-library(tm)
-library(sdazar)
-library(stringdist)
-library(lubridate)
-library(stringr)
-library(tm)
-library(qdap)
-library(wordcloud)
-library(ggplot2)
-library(ggthemes)
-library(textcat)
+# library(jsonlite)
+# library(qdap)
+# library(tm)
+# library(sdazar)
+# library(stringdist)
+# library(lubridate)
+# library(stringr)
+# library(tm)
+# library(qdap)
+# library(wordcloud)
+# library(ggplot2)
+# library(ggthemes)
+# library(textcat)
 ```
-
-
-```{r, echo = FALSE}
-# read metadata
-knitr::opts_chunk$set(fig.path = "plots/R/proposal-")
-
-#+ clear working space
-rm(list=ls(all=TRUE))
-
-#+ load libraries
-library(jsonlite)
-library(qdap)
-library(tm)
-library(sdazar)
-library(stringdist)
-library(lubridate)
-library(stringr)
-library(tm)
-library(qdap)
-library(wordcloud)
-library(ggplot2)
-library(ggthemes)
-library(textcat)
-```
-
 
 American Politics has become polarized over the past quarter-century. Research shows that American policy making has become more segregated and with little common voting, contrasting with what we observed decades ago where senators regularly crossed the aisle to get things done. This phenomenon is not only related to politicians but has also affected the public: according to data from the Pew Research Center, 45% of Republicans and 41% of Democrats think the other party is so dangerous that they consider it as a **threat to the nation**. Some commentators have also suggested that *media* and *new social platforms* exacerbate political polarization by spreading *fake news*.
 
