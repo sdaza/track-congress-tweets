@@ -24,7 +24,7 @@ Daily tweet meta information on Congress members is stored in JSON files.
 Getting metadata (party affiliation)
 ------------------------------------
 
-For now, I am using user's `screen names` to merge meta and tweeter data. This is not ideal because user's `screen names` are subject to change. Alex Litel is willing to add user's `id_str` and archiving old user in the metadata file (`user-filtered.json`, see more [here](https://github.com/alexlitel/congresstweets/issues/2).
+For now, I am using user's `screen names` to merge meta and tweeter data. This is not ideal because user's `screen names` are subject to change. Alex Litel is willing to add user's `id_str` and archiving old users in the metadata file (see more [here](https://github.com/alexlitel/congresstweets/issues/2)).
 
 ``` r
 #+ get metadata (party affiliation)
@@ -185,10 +185,10 @@ setkey(dmeta, screen_name)
 
 dat <- dmeta[dat]
 dat <- dat[!is.na(name)] # for now remove unmatched cases
-nrow(dat) / 58778 # 70% of tweets
+nrow(dat)
 ```
 
-    ## [1] 0.9800776
+    ## [1] 57607
 
 Preliminary analysis
 ====================
