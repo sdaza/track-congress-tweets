@@ -170,22 +170,24 @@ After collecting tweets, I kept only those coming from accounts that match metad
 wdat <- copy(dat)
 wdat[, otext := text] # save original text
 
-# remove RTs
+wdat[1, .(text, otext)]
 
 # some cleaning
-wdat[, text := gsub("&amp", "and", text)]
-wdat[, text := gsub("@\\w+", "", text)] # usernames
-wdat[, text := gsub("(f|ht)tp(s?)://\\S+", "", text, perl = TRUE)] # URLS
-wdat[, text := gsub("^\\s+|\\s+$", "", text)] # spaces
-wdat[, text := str_replace_all(text, "[[:punct:]]", " ")]
-wdat[, text := str_replace_all(text, "[[:digit:]]", " ")]
-wdat[, text := gsub("^ *|(?<= ) | *$", "", text, perl = TRUE)]
-# dat[, text := iconv(text, "latin1", "UTF-8", sub = '')]
-wdat[, rts := ifelse(grepl("^RT\\s|QT\\s", text), 1, 0)]
+wdat[, rts := ifelse(grepl("(^RT\\s)", text), 1, 0)]
 table(wdat$rts, useNA = "ifany")
 wdat <- wdat[rts == 0]
 
+wdat[, text := gsub("QT.+", "", text)] # remove quotes
+wdat[, text := gsub("&amp;", "and", text)]
+wdat[, text := gsub("@\\w+", "", text)] # usernames
+wdat[, text := gsub("((f|ht)tp\\S+\\s*|www\\S+\\s*)", "", text)] # URLS
+wdat[, text := gsub("(\n|//)", " ", text, perl = TRUE)] # scapes
+wdat[, text := gsub("^\\s+|\\s+$", "", text)] # spaces
+#wdat[, text := removeNumbers("text")] # numbers
+wdat[, text := gsub("^ *|(?<= ) | *$", "", text, perl = TRUE)]
+wdat[, text := iconv(text, "latin1", "ASCII", sub="")]
 wdat[, text := tolower(text)]
+
 
 # wdat[, text := iconv(text, "latin1", "UTF-8",sub='')]
 
@@ -195,15 +197,15 @@ nrow(wdat)
 rows <- sample(1:nrow(wdat), 10)
 wdat[rows, text, otext][1]
 
+
 #+ identify language
-wdat[, lang := textcat(text, p = ECIMCI_profiles)]
-table(wdat$lang, useNA = "ifany")
-wdat[lang == "fr", .(rts, text)]
+#wdat[, lang := textcat(text, p = ECIMCI_profiles)]
+#table(wdat$lang, useNA = "ifany")
+#wdat[lang == "fr", .(rts, text)]
 
 # select only english tweets for now!
-wdat <- wdat[lang == "en"] # the textcat function is not always precise
+#wdat <- wdat[lang == "en"] # the textcat function is not always precise
 nrow(wdat)
-
 
 ```
 
@@ -280,6 +282,10 @@ createWordCloud(wdat[party == "R"], "Republicans")
 createWordCloud(wdat[party == "D"], "Democrats")
 ```
 
+```{r, include = FALSE}
+save(wdat, file = "tweet_data.Rdata")
+
+```
 
 # Next steps
 

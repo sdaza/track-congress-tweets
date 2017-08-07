@@ -1,0 +1,105 @@
+---
+title: "Topic Modeling Congress Members' Tweets"
+output: rmarkdown::github_document
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+---
+
+I explore tweets content by using the LDA method (Latent Dirichlet Allocation), a probability-based approach to find clustering within documents. The objective is to identify topics and compare [polarity scores](proposal.md) by party affiliation, that is, to  identify topics in which tone is different by party.
+
+
+```{r, eval=FALSE,echo=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(fig.path = "plots/R/topic-modeling-")
+
+#+ load libraries
+library(jsonlite)
+library(qdap)
+library(tm)
+library(sdazar)
+library(stringdist)
+library(lubridate)
+library(stringr)
+library(tm)
+library(qdap)
+library(wordcloud)
+library(ggplot2)
+library(ggthemes)
+library(textcat)
+library(lda)
+library(LDAvis)
+library(treemap)
+library(pbapply)
+
+```
+
+Using the processed data from the proposal, I run a LDA model with the `lda` package in R.
+
+```{r}
+#+ load data and clean tweets
+load("tweet_data.Rdata")
+text <- wdat$text
+
+char_to_remove <- c("m", "w", "t", "th", "c", "rd", "u", "s", "d", "en", "de", "la", "y", "el")
+text <- removeNumbers(text)
+text <- removeWords(text, c(stopwords("en"), char_to_remove))
+text <- removePunctuation(text)
+text <- removeWords(text, c(stopwords("en"), char_to_remove))
+
+blank.removal <- function(x) {
+  x <- unlist(strsplit(x, " "))
+  x <- subset(x, nchar(x) > 0)
+  x <- paste(x, collapse = " ")
+}
+
+text <- pblapply(text, blank.removal)
+tweets <- lexicalize(text)
+
+wc <- word.counts(tweets$documents, tweets$vocab)
+names(wc)
+tweet.length <-  document.lengths(tweets$documents)
+hist(tweet.length)
+
+```
+
+Here I run a topic model. After running the model several times, and based on the content of the topics, I decided to identify 7 topics (`k = 4`). This methods seems to be very unstable, I have to look for better alternatives and specifications.
+
+```{r}
+k <- 4
+num.iter <- 100
+alpha <- 0.02
+eta <- 0.02
+
+set.seed(123458)
+fit <- lda.collapsed.gibbs.sampler(documents = tweets$documents, K = k,
+  vocab = tweets$vocab,
+  num.iterations = num.iter,
+  alpha = alpha,
+  eta = eta,
+  initial = NULL,
+  burnin = 50,
+  compute.log.likelihood = TRUE)
+
+plot(fit$log.likelihoods[1,], ylab = "Log likelihood")
+top.topic.words(fit$topics, 7, by.score = TRUE)
+top.topic.documents(fit$document_sums,1)
+```
+
+
+```{r}
+theta <- t(pbapply(fit$document_sums + alpha, 2, function(x) x/sum(x)))
+wdat[, topic := apply(theta,1,which.max)]
+summary(wdat$topic)
+table(wdat$topic)
+
+ts <- wdat[party != "I", .(polarity = Mean(polarity)), .(topic, party)]
+d <- ts[, .(d = abs(diff(polarity))), .(topic)]
+setorder(d, -d)
+d
+
+ggplot(ts, aes(x = topic, y = polarity, group = party, fill = party, color = party)) + geom_point() + geom_line()
+```
+
+# References
+
+- Kwartler, T. (2017). Text mining in practice with R.
+- Munzert, S. (2015). Automated data collection with R: a practical guide to Web scraping and text mining. Chichester, West Sussex, United Kingdom: John Wiley & Sons Inc.
+

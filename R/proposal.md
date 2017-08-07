@@ -251,22 +251,24 @@ After collecting tweets, I kept only those coming from accounts that match metad
 wdat <- copy(dat)
 wdat[, otext := text] # save original text
 
-# remove RTs
+wdat[1, .(text, otext)]
 
 # some cleaning
-wdat[, text := gsub("&amp", "and", text)]
-wdat[, text := gsub("@\\w+", "", text)] # usernames
-wdat[, text := gsub("(f|ht)tp(s?)://\\S+", "", text, perl = TRUE)] # URLS
-wdat[, text := gsub("^\\s+|\\s+$", "", text)] # spaces
-wdat[, text := str_replace_all(text, "[[:punct:]]", " ")]
-wdat[, text := str_replace_all(text, "[[:digit:]]", " ")]
-wdat[, text := gsub("^ *|(?<= ) | *$", "", text, perl = TRUE)]
-# dat[, text := iconv(text, "latin1", "UTF-8", sub = '')]
-wdat[, rts := ifelse(grepl("^RT\\s|QT\\s", text), 1, 0)]
+wdat[, rts := ifelse(grepl("(^RT\\s)", text), 1, 0)]
 table(wdat$rts, useNA = "ifany")
 wdat <- wdat[rts == 0]
 
+wdat[, text := gsub("QT.+", "", text)] # remove quotes
+wdat[, text := gsub("&amp;", "and", text)]
+wdat[, text := gsub("@\\w+", "", text)] # usernames
+wdat[, text := gsub("((f|ht)tp\\S+\\s*|www\\S+\\s*)", "", text)] # URLS
+wdat[, text := gsub("(\n|//)", " ", text, perl = TRUE)] # scapes
+wdat[, text := gsub("^\\s+|\\s+$", "", text)] # spaces
+#wdat[, text := removeNumbers("text")] # numbers
+wdat[, text := gsub("^ *|(?<= ) | *$", "", text, perl = TRUE)]
+wdat[, text := iconv(text, "latin1", "ASCII", sub="")]
 wdat[, text := tolower(text)]
+
 
 # wdat[, text := iconv(text, "latin1", "UTF-8",sub='')]
 
@@ -276,13 +278,14 @@ nrow(wdat)
 rows <- sample(1:nrow(wdat), 10)
 wdat[rows, text, otext][1]
 
+
 #+ identify language
-wdat[, lang := textcat(text, p = ECIMCI_profiles)]
-table(wdat$lang, useNA = "ifany")
-wdat[lang == "fr", .(rts, text)]
+#wdat[, lang := textcat(text, p = ECIMCI_profiles)]
+#table(wdat$lang, useNA = "ifany")
+#wdat[lang == "fr", .(rts, text)]
 
 # select only english tweets for now!
-wdat <- wdat[lang == "en"] # the textcat function is not always precise
+#wdat <- wdat[lang == "en"] # the textcat function is not always precise
 nrow(wdat)
 ```
 
@@ -298,15 +301,15 @@ wdat[, zpolarity := scale(pol$all$polarity)]
 summary(wdat$polarity)
 ```
 
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-    ## -1.7321  0.0000  0.0000  0.1115  0.2773  2.2942       8
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    ## -1.7321  0.0000  0.0000  0.1115  0.2774  2.2942
 
 ``` r
 summary(wdat$zpolarity)
 ```
 
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-    ## -5.5140 -0.3334 -0.3334  0.0000  0.4962  6.5285       8
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    ## -5.5128 -0.3334 -0.3334  0.0000  0.4960  6.5269
 
 ``` r
 #wdat[is.na(polarity), .(name, text)]
@@ -324,16 +327,16 @@ wdat[party != "I", .(avg_polarity = Mean(polarity)), party]
 ```
 
     ##    party avg_polarity
-    ## 1:     R   0.15894848
-    ## 2:     D   0.08279555
+    ## 1:     R   0.15906885
+    ## 2:     D   0.08277276
 
 ``` r
 wdat[party != "I", .(avg_zpolarity = Mean(zpolarity)), party]
 ```
 
     ##    party avg_zpolarity
-    ## 1:     R    0.14200907
-    ## 2:     D   -0.08576592
+    ## 1:     R    0.14226873
+    ## 2:     D   -0.08588284
 
 The average of the polarity score is 0.11. This means that on average each tweet is rather neutral, although they slightly incline towards more positive words. Democrats seem to have a higher proportion of *neutral* and negative words, what is confirmed by comparing the average polarity by party: 0.08 for Democrats, and 0.16 for Republicans.
 
@@ -350,9 +353,9 @@ d[1:3]
 ```
 
     ##           ymd         d
-    ## 1: 2017-07-27 0.1474597
-    ## 2: 2017-07-26 0.1336900
-    ## 3: 2017-07-06 0.1187518
+    ## 1: 2017-07-27 0.1480409
+    ## 2: 2017-07-26 0.1342197
+    ## 3: 2017-07-06 0.1181323
 
 ``` r
 ggplot(agg, aes(x = ymd, y = polarity, group = party, colour = party, fill = party)) +
