@@ -1,5 +1,5 @@
 ---
-title: "Congress Political Polarization Using Tweets"
+title: "Tracking Congress Political Polarization with Tweeter"
 output: rmarkdown::github_document
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 ---
