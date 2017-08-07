@@ -1,6 +1,6 @@
 Tracking Congress Political Polarization with Tweeter
 ================
-August 06, 2017
+August 07, 2017
 
 American Politics has become polarized over the past quarter-century. Research shows that American politics are more segregated and legislators have less common voting than decades ago, when senators regularly crossed the aisle to get things done. This phenomenon does not only affect politicians but also the public. According to data from the Pew Research Center, 45% of Republicans and 41% of Democrats think the other party is so dangerous that they consider it as a **threat to the nation**. Some commentators have also suggested that *media* and *new social platforms* exacerbate political polarization by spreading *fake news*.
 
@@ -140,7 +140,7 @@ Getting tweeter data
 
 ``` r
 #+ load tweeter data by month
-dates <- seq(as.Date("2017-06-21"), as.Date("2017-08-03"), by = "day")
+dates <- seq(as.Date("2017-07-01"), as.Date("2017-07-31"), by = "day")
 
 ldat <- list()
 for (i in seq_along(dates)) {
@@ -151,14 +151,14 @@ for (i in seq_along(dates)) {
 length(ldat)
 ```
 
-    ## [1] 44
+    ## [1] 31
 
 ``` r
 dat <- rbindlist(ldat)
 nrow(dat)
 ```
 
-    ## [1] 83310
+    ## [1] 55138
 
 ``` r
 tnames <- unique(dat$screen_name)
@@ -166,14 +166,14 @@ notthere <- !tnames %in% mnames
 length(notthere)
 ```
 
-    ## [1] 879
+    ## [1] 856
 
 ``` r
 there <- tnames[!notthere]
 length(there) # not that bad, I will use this for now
 ```
 
-    ## [1] 507
+    ## [1] 505
 
 Combining data files
 --------------------
@@ -188,44 +188,229 @@ dat <- dat[!is.na(name)] # for now remove unmatched cases
 nrow(dat)
 ```
 
-    ## [1] 57607
+    ## [1] 37578
+
+Some descriptives
+-----------------
+
+I am considering only Congress member tweets from July, 2017. As can be seen, Democrats are more active in Tweeter. The number of tweets follows a clear cycle by day: Peaks during weekdays, and much less frequency during weekends.
+
+``` r
+ts <- dat[, .(N = .N), .(screen_name, party)][party != "I"]
+table(ts$party, useNA = "ifany")
+```
+
+    ## 
+    ##   D   R 
+    ## 225 278
+
+``` r
+ts[, .(mean = mean(N)), party]
+```
+
+    ##    party      mean
+    ## 1:     R  51.09712
+    ## 2:     D 103.20889
+
+``` r
+ggplot(ts, aes(N, fill = party)) +
+ geom_histogram(bins = 50) +
+ labs(title = "Number of tweets per member", x = "Tweets", y = "Count")  +
+ theme_minimal()
+```
+
+![](proposal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-5-1.png)
+
+``` r
+# tweets by day
+dat[, day := day(time)]
+dat[, month := month(time)]
+dat[, year := year(time)]
+dat[, ymd := ymd(paste(year, month, day, sep = "-"))]
+dat[, ymd := factor(ymd, order = TRUE)]
+
+ts <- dat[party != "I", .(N = .N), .(ymd, party)]
+
+ggplot(ts, aes(y = N, x = ymd, group = party, colour = party)) +
+ geom_line() + geom_point() +
+ labs(title = "Number of tweets per day", x = "Tweets", y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+![](proposal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-5-2.png)
 
 Preliminary analysis
 ====================
 
-This analysis uses Congress tweets from June 21 to August 4, 2017. The objective is to estimate the polarity of tweets, that is, the measure of positive or negative intent in a writer's tone. The aim is to examine their variability and describe the most frequent words used by polarity and political party. This is just a first step in defining a more complex polarization index.
+The objective preliminary analysis is to estimate the polarity of tweets, that is, the measure of positive or negative intent in a writer's tone. The aim is to examine their variability and describe the most frequent words used by polarity and political party. This is just a first step in defining a more complex polarization index.
 
-After collecting tweets, I kept only those coming from accounts that match metadata for all the accounts the project follows for tweet collection (e.g., party affiliation, name). Then, I cleaned tweets by removing retweets (RT), URLs, usernames. Future versions of this analysis will process (punctuation based) emoticons and emojis.
+After collecting tweets, I kept only those coming from accounts that match metadata. Then, I cleaned tweets by removing retweets (RT), URLs and usernames. Future versions of this analysis will process (punctuation based) emoticons and emojis.
 
-I used the polarity function from package `qdap` to scan for positive and negative words within a list of terms associated with a particular emotional (i.e., subjectivity lexicon) and obtain polarity scores. Negative numbers represent a negative tone, zero represents a neutral tone, and positive numbers a positive tone. I used the lexicon developed by Bing Liu at the University of Illinois at Chicago.
+``` r
+wdat <- copy(dat)
+wdat[, otext := text] # save original text
 
-I analyzed 32497 tweets, from Democrats and Republican members. Most of the tweets come from Democrats (62%), and the House of Representatives (72%). Below I show the distribution of the polarity scores:
+# remove RTs
 
-![](figures/hist_polarity.png)
+# some cleaning
+wdat[, text := gsub("&amp", "and", text)]
+wdat[, text := gsub("@\\w+", "", text)] # usernames
+wdat[, text := gsub("(f|ht)tp(s?)://\\S+", "", text, perl = TRUE)] # URLS
+wdat[, text := gsub("^\\s+|\\s+$", "", text)] # spaces
+wdat[, text := str_replace_all(text, "[[:punct:]]", " ")]
+wdat[, text := str_replace_all(text, "[[:digit:]]", " ")]
+wdat[, text := gsub("^ *|(?<= ) | *$", "", text, perl = TRUE)]
+# dat[, text := iconv(text, "latin1", "UTF-8", sub = '')]
+wdat[, rts := ifelse(grepl("^RT\\s|QT\\s", text), 1, 0)]
+table(wdat$rts, useNA = "ifany")
+wdat <- wdat[rts == 0]
 
-The average of the polarity score is 0.11. This means that on average each tweet is rather neutral, although they slightly incline towards more positive words. Democrats seem to have a higher proportion of *neutral* and negative words, what is confirmed by comparing the average polarity by party: 0.07 for Democrats, and 0.17 for Republicans.
+wdat[, text := tolower(text)]
 
-The figure below shows the average polarity score by Political party and day.
+# wdat[, text := iconv(text, "latin1", "UTF-8",sub='')]
 
-![](figures/trend_polarity.png)
+wdat <- wdat[text != ""]
+nrow(wdat)
 
-As can be seen, the scores vary considerably over time. Positivity reaches a pick during the Independence Day when both parties tend to coincide on their positive tone. The biggest difference between scores is observed on June 26th. Some of the most important headlines during that day was *Senate's version of Health Care Bill would increase the number of uninsured by 22 million by 2026*. This provides some initial face validity of the polarity score.
+rows <- sample(1:nrow(wdat), 10)
+wdat[rows, text, otext][1]
 
-Finally, I show word clouds by party based on a scaled polarity score. In the case of Republicans, most of the positive words are related to *award*, *protection*, *gold*, *innovation*, and *success*, while among Democrats there are more messages related to the Independence Day. Regarding the negative words, both parties highlight the tragedy of US marines in Mississippi, although Democrats emphasize terms such as *reject*, *threaten*, *flawed*, *corruption*. Performing topic modeling and clustering will provide more insights on these patterns.
+#+ identify language
+wdat[, lang := textcat(text, p = ECIMCI_profiles)]
+table(wdat$lang, useNA = "ifany")
+wdat[lang == "fr", .(rts, text)]
 
-<!-- ![](figures/words_r.png)
-![](figures/words_d.png)
- -->
-### Next steps
+# select only english tweets for now!
+wdat <- wdat[lang == "en"] # the textcat function is not always precise
+nrow(wdat)
+```
+
+I used the polarity function from package `qdap` to scan for positive and negative words within a list of terms associated with a particular emotional (i.e., subjectivity lexicon) and obtain *polarity scores*. Negative numbers represent a negative tone, zero represents a neutral tone, and positive numbers a positive tone. I used the lexicon developed by Bing Liu at the University of Illinois at Chicago.
+
+I analyzed 25857 tweets from Democrats and Republican members. Most of the tweets come from Democrats (0.62), and the House of Representatives (0.7). Below I show the distribution of the polarity scores.
+
+``` r
+pol <- polarity(wdat$text)
+wdat[, polarity := pol$all$polarity]
+wdat[, zpolarity := scale(pol$all$polarity)]
+
+summary(wdat$polarity)
+```
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+    ## -1.7321  0.0000  0.0000  0.1115  0.2773  2.2942       8
+
+``` r
+summary(wdat$zpolarity)
+```
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+    ## -5.5140 -0.3334 -0.3334  0.0000  0.4962  6.5285       8
+
+``` r
+#wdat[is.na(polarity), .(name, text)]
+
+ggplot(wdat[party != "I"], aes(x = polarity, group = party, fill = party)) +
+  geom_histogram(aes(y=..count../sum(..count..)), position = "identity",  binwidth = 0.25, alpha = 0.5, bins = 50) +
+  labs(y = "Proportion", x = "Raw Polarity", title = "Histogram Raw Polarity Score by Party") +
+  theme_minimal()
+```
+
+![](proposal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-7-1.png)
+
+``` r
+wdat[party != "I", .(avg_polarity = Mean(polarity)), party]
+```
+
+    ##    party avg_polarity
+    ## 1:     R   0.15894848
+    ## 2:     D   0.08279555
+
+``` r
+wdat[party != "I", .(avg_zpolarity = Mean(zpolarity)), party]
+```
+
+    ##    party avg_zpolarity
+    ## 1:     R    0.14200907
+    ## 2:     D   -0.08576592
+
+The average of the polarity score is 0.11. This means that on average each tweet is rather neutral, although they slightly incline towards more positive words. Democrats seem to have a higher proportion of *neutral* and negative words, what is confirmed by comparing the average polarity by party: 0.08 for Democrats, and 0.16 for Republicans.
+
+The figure below shows the average polarity score by political party and day.
+
+``` r
+# polarity by day
+agg <- wdat[party != "I", .(polarity = Mean(polarity), zpolarity = Mean(zpolarity)), .(party, ymd)]
+
+setkey(agg, party, ymd)
+d <- agg[, .(d = abs(diff(polarity))), ymd]
+setorder(d, -d)
+d[1:3]
+```
+
+    ##           ymd         d
+    ## 1: 2017-07-27 0.1474597
+    ## 2: 2017-07-26 0.1336900
+    ## 3: 2017-07-06 0.1187518
+
+``` r
+ggplot(agg, aes(x = ymd, y = polarity, group = party, colour = party, fill = party)) +
+  geom_line() +
+  geom_point()  +
+  labs(x = "", y = "Raw Polarization", title = "Polarization Score by Day and Party") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+![](proposal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-8-1.png)
+
+As can be seen, polarity scores vary considerably over time. Positivity reaches a pick during the Independence Day when both parties tend to coincide on their positive tone. The biggest difference between scores is observed on July 27th and 26th, when there was tension on Congress due to the Health Care bill. This provides some initial face validity of the polarity score.
+
+Finally, I show word clouds by party based on a scaled polarity score. In the case of Republicans, most of the positive words are related to the independence day (*congratulations*, *award*, *beatiful*), while among Democrats there are more messages related to *stabilize*, *fairness*, *accessible*. Regarding the negative words, both parties highlight the tragedy of US marines in Mississippi, although Democrats emphasize terms such as *immoral*, *threaten*, *illness*, *suffer*. Performing topic modeling and clustering will provide more insights on these patterns.
+
+``` r
+createWordCloud <- function(data, title = "World Cloud") {
+  neg.tweets <- data[zpolarity > 0, text]
+  pos.tweets <- data[zpolarity < 0, text]
+  pos.terms <- paste(pos.tweets, collapse = " ")
+  neg.terms <- paste(neg.tweets, collapse = " ")
+  all.terms <- c(pos.terms, neg.terms)
+  all.corpus <- VCorpus(VectorSource(all.terms))
+  all.tdm <- TermDocumentMatrix(all.corpus,
+                                control = list(weighting = weightTfIdf,
+                                               removePunctuation = TRUE,
+                                               stopwords = stopwords(kind = "en")))
+  all.tdm.m <- as.matrix(all.tdm)
+  colnames(all.tdm.m) <- c("negative", "positive")
+  comparison.cloud(all.tdm.m, max.words = 100, colors = c("darkred", "darkgreen"))
+  text(x=0.5, y=1.02, title)
+}
+
+
+createWordCloud(wdat[party == "R"], "Republicans")
+```
+
+![](proposal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-9-1.png)
+
+``` r
+createWordCloud(wdat[party == "D"], "Democrats")
+```
+
+![](proposal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-9-2.png)
+
+Next steps
+==========
 
 This is my first time doing text analysis, and I am very excited about this project. Learning and applying data science techniques to get insights is exactly what I look for, that is why I applied to the Incubator. There is still a lot to do. I will follow these next steps:
 
 1.  To use different subjectivity lexicons to assess the robustness of classifications, and adapt them accordingly to better capture the nature of tweets.
 2.  To weight results by members rather than number of tweets.
-3.  To use clustering and topic modeling methods to get insights on the content tweets by party, and characterize polarity scores in a more systematic way.
+3.  To use clustering and topic modeling methods to get insights on the content tweets by party, and characterize polarity scores in a more systematic way. [Some progress here!]()
 4.  Create a Shiny app to process these data automatically and deliver it in a friendly format by day and month.
 
-### References
+References
+==========
 
 -   Kwartler, T. (2017). Text mining in practice with R.
 -   Munzert, S. (2015). Automated data collection with R: a practical guide to Web scraping and text mining. Chichester, West Sussex, United Kingdom: John Wiley & Sons Inc.

@@ -1,5 +1,5 @@
 
-# How Congress Political Polarization Evolves in Tweeter
+# Tracking Congress Political Polarization with Tweeter
 
 - **[Proposal](R/proposal.md)**
 - **[Topic Modeling]()**
