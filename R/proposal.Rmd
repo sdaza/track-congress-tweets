@@ -41,16 +41,18 @@ I use data collected by the developer Alex Litel through the app ([Congressional
 
 Daily tweet meta information on Congress members is stored in JSON files.
 
-```{r, eval=FALSE, echo=FALSE}
+## Getting metadata (party affiliation)
 
-#+ get data
-#+ metadata
+For now, I am using user's `screen names` to merge meta and tweeter data. This is not ideal because user's `screen names` are subject to change. Alex Litel is willing to add user's `id_str` and archiving old user in the metadata file (`user-filtered.json`, see more [here](https://github.com/alexlitel/congresstweets/issues/2).
+
+```{r}
+#+ get metadata (party affiliation)
 url <- "https://raw.githubusercontent.com/alexlitel/congresstweets-automator/master/data/users-filtered.json"
 
 meta <- jsonlite::fromJSON(url, simplifyDataFrame = FALSE)
 length(meta)
 
-# extract data of interest
+# extract data of interest (nested lists)
 dmeta <- list()
 for (i in 1:length(meta)) {
   temp <- meta[[i]]
@@ -62,14 +64,14 @@ for (i in 1:length(meta)) {
   party = ifelse(is.null(temp$party), NA, temp$party),
   sn1 = ifelse(length(temp$accounts$office) > 0 &&
                  !is.null(temp$accounts$office[[1]]$screen_name),
-               temp$accounts$office[[1]]$screen_name, NA),
+               temp$accounts$office[[1]]$screen_name, NA), # first screen name
   sn2 = ifelse(length(temp$accounts$campaing) > 0 &&
                  !is.null(temp$accounts$campaign[[1]]$screen_name),
-               emp$accounts$campaign[[1]]$screen_name, NA))
+               emp$accounts$campaign[[1]]$screen_name, NA)) # second screen name
 }
 
 dmeta <- rbindlist(dmeta)
-table(is.na(dmeta$sn1))
+table(is.na(dmeta$sn1)) # missing screen names
 
 summary(dmeta)
 prop.table(table(dmeta$chamber))
@@ -77,19 +79,23 @@ prop.table(table(dmeta$type))
 anyDuplicated(dmeta[type == "member", name]) # duplicates among members
 
 dmeta <- dmeta[type == "member"] # select only members
+table(dmeta$chamber, useNA = "ifany")
 
 anyDuplicated(dmeta$sn1)
 anyDuplicated(dmeta$sn2)
 
 setkey(dmeta, sn1)
-dmeta[, screen_name := ifelse(is.na(sn1), sn2, sn1)]
-dmeta[is.na(screen_name)]
+dmeta[, screen_name := ifelse(is.na(sn1), sn2, sn1)] # to use second screen nanme only if the first one is missing
 dmeta[!is.na(screen_name), N := .N, screen_name]
-table(dmeta$N, useNA = "ifany") # okey, no duplicates excepts for missing cases
+table(dmeta$N, useNA = "ifany") # no duplicates except for missing cases
 
-# congress member names in metadata
+# congress member names from metadata
 mnames <- unique(dmeta$screen_name)
+```
 
+## Getting tweeter data
+
+```{r}
 #+ load tweeter data by month
 dates <- seq(as.Date("2017-06-21"), as.Date("2017-08-03"), by = "day")
 
@@ -101,24 +107,18 @@ for (i in seq_along(dates)) {
 
 length(ldat)
 dat <- rbindlist(ldat)
-
-names(dat)
-table(dat$screen_name)
+nrow(dat)
 
 tnames <- unique(dat$screen_name)
-tnames
-mnames <- unique(dmeta$screen_name)
-mnames
-
 notthere <- !tnames %in% mnames
-length(notthere) #
+length(notthere)
 there <- tnames[!notthere]
-length(there) # 507, okey, not that bad!
+length(there) # not that bad, I will use this for now
+```
 
-# TODO: figure a way to match more tweeter accounts to congress members (fuzzy matching)
-# for instance, to use the amatch function
-# deal with people who have more than one tweeter account
+## Combining data files
 
+```{r}
 # merge data
 setkey(dat, screen_name)
 setkey(dmeta, screen_name)
@@ -130,7 +130,7 @@ nrow(dat) / 58778 # 70% of tweets
 
 # Preliminary analysis
 
-This analysis uses Congress tweets from June 21 to July 21, 2017. The objective is to estimate the polarity of tweets, that is, the measure of positive or negative intent in a writer's tone. The aim is to examine their variability and describe the most frequent words used by polarity and political party. This is just a first step in defining a more complex polarization index.
+This analysis uses Congress tweets from June 21 to August 4, 2017. The objective is to estimate the polarity of tweets, that is, the measure of positive or negative intent in a writer's tone. The aim is to examine their variability and describe the most frequent words used by polarity and political party. This is just a first step in defining a more complex polarization index.
 
 After collecting tweets, I kept only those coming from accounts that match metadata for all the accounts the project follows for tweet collection (e.g., party affiliation, name). Then, I cleaned tweets by removing retweets (RT), URLs, usernames. Future versions of this analysis will process (punctuation based) emoticons and emojis.
 

@@ -21,10 +21,179 @@ I use data collected by the developer Alex Litel through the app ([Congressional
 
 Daily tweet meta information on Congress members is stored in JSON files.
 
+Getting metadata (party affiliation)
+------------------------------------
+
+For now, I am using user's `screen names` to merge meta and tweeter data. This is not ideal because user's `screen names` are subject to change. Alex Litel is willing to add user's `id_str` and archiving old user in the metadata file (`user-filtered.json`, see more [here](https://github.com/alexlitel/congresstweets/issues/2).
+
+``` r
+#+ get metadata (party affiliation)
+url <- "https://raw.githubusercontent.com/alexlitel/congresstweets-automator/master/data/users-filtered.json"
+
+meta <- jsonlite::fromJSON(url, simplifyDataFrame = FALSE)
+length(meta)
+```
+
+    ## [1] 592
+
+``` r
+# extract data of interest (nested lists)
+dmeta <- list()
+for (i in 1:length(meta)) {
+  temp <- meta[[i]]
+  temp
+  dmeta[[i]] <- data.table(
+  name =temp$name,
+  chamber =temp$chamber,
+  type = temp$type,
+  party = ifelse(is.null(temp$party), NA, temp$party),
+  sn1 = ifelse(length(temp$accounts$office) > 0 &&
+                 !is.null(temp$accounts$office[[1]]$screen_name),
+               temp$accounts$office[[1]]$screen_name, NA), # first screen name
+  sn2 = ifelse(length(temp$accounts$campaing) > 0 &&
+                 !is.null(temp$accounts$campaign[[1]]$screen_name),
+               emp$accounts$campaign[[1]]$screen_name, NA)) # second screen name
+}
+
+dmeta <- rbindlist(dmeta)
+table(is.na(dmeta$sn1)) # missing screen names
+```
+
+    ## 
+    ## FALSE  TRUE 
+    ##   583     9
+
+``` r
+summary(dmeta)
+```
+
+    ##      name             chamber              type          
+    ##  Length:592         Length:592         Length:592        
+    ##  Class :character   Class :character   Class :character  
+    ##  Mode  :character   Mode  :character   Mode  :character  
+    ##     party               sn1              sn2         
+    ##  Length:592         Length:592         Mode:logical  
+    ##  Class :character   Class :character   NA's:592      
+    ##  Mode  :character   Mode  :character
+
+``` r
+prop.table(table(dmeta$chamber))
+```
+
+    ## 
+    ##       house       joint      senate 
+    ## 0.798986486 0.003378378 0.197635135
+
+``` r
+prop.table(table(dmeta$type))
+```
+
+    ## 
+    ##      caucus   committee      member       party 
+    ## 0.023648649 0.060810811 0.908783784 0.006756757
+
+``` r
+anyDuplicated(dmeta[type == "member", name]) # duplicates among members
+```
+
+    ## [1] 0
+
+``` r
+dmeta <- dmeta[type == "member"] # select only members
+table(dmeta$chamber, useNA = "ifany")
+```
+
+    ## 
+    ##  house senate 
+    ##    438    100
+
+``` r
+anyDuplicated(dmeta$sn1)
+```
+
+    ## [1] 126
+
+``` r
+anyDuplicated(dmeta$sn2)
+```
+
+    ## [1] 2
+
+``` r
+setkey(dmeta, sn1)
+dmeta[, screen_name := ifelse(is.na(sn1), sn2, sn1)] # to use second screen nanme only if the first one is missing
+dmeta[!is.na(screen_name), N := .N, screen_name]
+table(dmeta$N, useNA = "ifany") # no duplicates except for missing cases
+```
+
+    ## 
+    ##    1 <NA> 
+    ##  529    9
+
+``` r
+# congress member names from metadata
+mnames <- unique(dmeta$screen_name)
+```
+
+Getting tweeter data
+--------------------
+
+``` r
+#+ load tweeter data by month
+dates <- seq(as.Date("2017-06-21"), as.Date("2017-08-03"), by = "day")
+
+ldat <- list()
+for (i in seq_along(dates)) {
+      url <- paste0("https://alexlitel.github.io/congresstweets/data/", dates[i], ".json")
+      ldat[[i]] <- jsonlite::fromJSON(url, simplifyDataFrame = TRUE)
+}
+
+length(ldat)
+```
+
+    ## [1] 44
+
+``` r
+dat <- rbindlist(ldat)
+nrow(dat)
+```
+
+    ## [1] 83310
+
+``` r
+tnames <- unique(dat$screen_name)
+notthere <- !tnames %in% mnames
+length(notthere)
+```
+
+    ## [1] 879
+
+``` r
+there <- tnames[!notthere]
+length(there) # not that bad, I will use this for now
+```
+
+    ## [1] 507
+
+Combining data files
+--------------------
+
+``` r
+# merge data
+setkey(dat, screen_name)
+setkey(dmeta, screen_name)
+
+dat <- dmeta[dat]
+dat <- dat[!is.na(name)] # for now remove unmatched cases
+nrow(dat) / 58778 # 70% of tweets
+```
+
+    ## [1] 0.9800776
+
 Preliminary analysis
 ====================
 
-This analysis uses Congress tweets from June 21 to July 21, 2017. The objective is to estimate the polarity of tweets, that is, the measure of positive or negative intent in a writer's tone. The aim is to examine their variability and describe the most frequent words used by polarity and political party. This is just a first step in defining a more complex polarization index.
+This analysis uses Congress tweets from June 21 to August 4, 2017. The objective is to estimate the polarity of tweets, that is, the measure of positive or negative intent in a writer's tone. The aim is to examine their variability and describe the most frequent words used by polarity and political party. This is just a first step in defining a more complex polarization index.
 
 After collecting tweets, I kept only those coming from accounts that match metadata for all the accounts the project follows for tweet collection (e.g., party affiliation, name). Then, I cleaned tweets by removing retweets (RT), URLs, usernames. Future versions of this analysis will process (punctuation based) emoticons and emojis.
 
