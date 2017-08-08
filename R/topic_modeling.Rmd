@@ -8,7 +8,7 @@ I explore Congress members' tweets using the Latent Dirichlet Allocation
 (LDA) method, a probability-based approach to find clusters in documents. The objective is to identify topics and compare [polarity scores](proposal.md) by party affiliation, that is, to find topics in which writer's tone is different by party.
 
 
-```{r, eval=FALSE,echo=FALSE, message=FALSE, warning=FALSE}
+```{r, eval = TRUE, echo=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(fig.path = "plots/R/topic-modeling-")
 
 #+ load libraries
@@ -42,9 +42,9 @@ text <- wdat$text
 
 #char_to_remove <- c("m", "w", "t", "th", "c", "rd", "u", "s", "d", "en", "de", "la", "y", "el", "h")
 
-text <- removeNumbers(text)
 text <- removeWords(text, c(stopwords("en")))
 text <- removePunctuation(text)
+text <- removeNumbers(text)
 
 blank.removal <- function(x) {
   x <- unlist(strsplit(x, " "))
@@ -63,7 +63,7 @@ tweet.length <-  document.lengths(tweets$documents)
 
 I ran several topic models and found that a solution with 4 cluster seems reasonable after exploring word frequencies (`k = 4`). The plot below shows that the model reaches convergence after 200 iterations. However, the LDA algorithm provides rather unstable results. I have to look for alternative algorithms and specifications.
 
-```{r}
+```{r, warning = FALSE}
 k <- 4
 num.iter <- 500
 alpha <- 0.02
@@ -82,26 +82,12 @@ fit <- lda.collapsed.gibbs.sampler(documents = tweets$documents, K = k,
 plot(fit$log.likelihoods[1,], ylab = "Log likelihood")
 top.topic.words(fit$topics, 10, by.score = TRUE)
 top.topic.documents(fit$document_sums,1)
-```
 
-The more frequent words by topic are shown below (both in a table and word cloud). The first topic is mainly about *town hall* and *summer*, the second one on the *Independence Day* celebration. The third and fourth are about the connection between Russia and Trump's administration , and *health care reform and Affordable Care Act (ACA)*.
-
-```{r}
 theta <- t(pbapply(fit$document_sums + alpha, 2, function(x) x/sum(x)))
 wdat[, topic := apply(theta,1,which.max)]
 summary(wdat$topic)
 table(wdat$topic)
 
-# assign scores
-ts <- wdat[party != "I", .(polarity = Mean(polarity)), .(topic, party)]
-# compute absolute differences between parties
-d <- ts[, .(d = abs(diff(polarity))), .(topic)]
-setorder(d, -d); d
-
-ggplot(ts, aes(x = topic, y = polarity, group = party, fill = party, color = party)) + geom_point() + geom_line()
-```
-
-```{r, warning=FALSE}
 createWordCloud <- function(data, title = "Title", groups) {
   corp <- list()
   for (i in 1:groups) {
@@ -122,10 +108,21 @@ createWordCloud <- function(data, title = "Title", groups) {
 }
 
 createWordCloud(wdat, "Word Cloud by Topics", 4)
-
 ```
 
+The more frequent words by topic are shown below (both in a table and word cloud). The first topic is mainly about *town hall* and *summer*, the second one on the *Independence Day* celebration. The third and fourth are about the connection between Russia and Trump's administration , and *health care reform and Affordable Care Act (ACA)*.
+
 Finally, we can see that differences in sentiment scores are higher in topics such *health care reform* and the *Russian meddling*, and tend to converge on positive topics such the *Independence Day*. This provide some face validity to the idea of using sentiment scores to create a polarization index. However, different topic modeling algorithms should be used to assess the robustness of the method.
+
+```{r}
+# assign scores
+ts <- wdat[party != "I", .(polarity = Mean(polarity)), .(topic, party)]
+# compute absolute differences between parties
+d <- ts[, .(d = abs(diff(polarity))), .(topic)]
+setorder(d, -d); d
+
+ggplot(ts, aes(x = topic, y = polarity, group = party, fill = party, color = party)) + geom_point() + geom_line()
+```
 
 
 # References
