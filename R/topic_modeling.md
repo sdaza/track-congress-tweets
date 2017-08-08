@@ -145,7 +145,7 @@ createWordCloud(wdat, "Word Cloud by Topics", 4)
 
 ![](topic_modeling_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-5-1.png)
 
-Finally, we can see that differences in sentiment scores are higher in topics such *health care reform* and the *Russian meddling*, and tend to converge on positive topics such the *Independence Day*. This provide some face validity to the idea of using sentiment scores to create a polarization index. However, different topic modeling algorithms should be used, though, to assess the robustness of the method.
+Finally, we can see that differences in sentiment scores are higher in topics such *health care reform* and the *Russian meddling*, and tend to converge on positive topics such the *Independence Day*. This provide some face validity to the idea of using sentiment scores to create a polarization index. However, different topic modeling algorithms should be used to assess the robustness of the method.
 
 References
 ==========
