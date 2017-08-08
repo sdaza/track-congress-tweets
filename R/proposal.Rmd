@@ -4,7 +4,7 @@ output: rmarkdown::github_document
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 ---
 
-```{r, eval=FALSE,echo=FALSE, message=FALSE, warning=FALSE}
+```{r, eval=TRUE,echo=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(fig.path = "plots/R/proposal-")
 
 #+ load libraries
