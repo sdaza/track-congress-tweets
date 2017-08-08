@@ -219,7 +219,7 @@ ggplot(ts, aes(N, fill = party)) +
  theme_minimal()
 ```
 
-![](proposal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-5-1.png)
+![](plots/R/proposal-unnamed-chunk-5-1.png)
 
 ``` r
 # tweets by day
@@ -238,7 +238,7 @@ ggplot(ts, aes(y = N, x = ymd, group = party, colour = party)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
-![](proposal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-5-2.png)
+![](plots/R/proposal-unnamed-chunk-5-2.png)
 
 Preliminary analysis
 ====================
@@ -318,7 +318,7 @@ ggplot(wdat[party != "I"], aes(x = polarity, group = party, fill = party)) +
   theme_minimal()
 ```
 
-![](proposal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-7-1.png)
+![](plots/R/proposal-unnamed-chunk-7-1.png)
 
 ``` r
 wdat[party != "I", .(avg_polarity = Mean(polarity)), party]
@@ -364,7 +364,7 @@ ggplot(agg, aes(x = ymd, y = polarity, group = party, colour = party, fill = par
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
-![](proposal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-8-1.png)
+![](plots/R/proposal-unnamed-chunk-8-1.png)
 
 As can be seen, polarity scores vary considerably over time. Positivity reaches a pick during the Independence Day when both parties tend to coincide on their positive tone. The biggest difference between scores is observed on July 27th and 26th, when there was tension on Congress due to the Health Care bill. This provides some initial face validity of the polarity score.
 
@@ -392,13 +392,13 @@ createWordCloud <- function(data, title = "World Cloud") {
 createWordCloud(wdat[party == "R"], "Republicans")
 ```
 
-![](proposal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-9-1.png)
+![](plots/R/proposal-unnamed-chunk-9-1.png)
 
 ``` r
 createWordCloud(wdat[party == "D"], "Democrats")
 ```
 
-![](proposal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-9-2.png)
+![](plots/R/proposal-unnamed-chunk-9-2.png)
 
 Next steps
 ==========

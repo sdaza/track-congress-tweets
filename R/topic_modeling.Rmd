@@ -63,7 +63,7 @@ tweet.length <-  document.lengths(tweets$documents)
 
 I ran several topic models and found that a solution with 4 cluster seems reasonable after exploring word frequencies (`k = 4`). The plot below shows that the model reaches convergence after 200 iterations. However, the LDA algorithm provides rather unstable results. I have to look for alternative algorithms and specifications.
 
-```{r, warning = FALSE}
+```{r wordcloud_topics, warning = FALSE}
 k <- 4
 num.iter <- 500
 alpha <- 0.02
@@ -114,7 +114,7 @@ The more frequent words by topic are shown below (both in a table and word cloud
 
 Finally, we can see that differences in sentiment scores are higher in topics such *health care reform* and the *Russian meddling*, and tend to converge on positive topics such the *Independence Day*. This provide some face validity to the idea of using sentiment scores to create a polarization index. However, different topic modeling algorithms should be used to assess the robustness of the method.
 
-```{r}
+```{r gap_scores}
 # assign scores
 ts <- wdat[party != "I", .(polarity = Mean(polarity)), .(topic, party)]
 # compute absolute differences between parties
