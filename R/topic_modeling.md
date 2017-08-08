@@ -57,7 +57,7 @@ fit <- lda.collapsed.gibbs.sampler(documents = tweets$documents, K = k,
 plot(fit$log.likelihoods[1,], ylab = "Log likelihood")
 ```
 
-![](plots/R/topic-modeling-unnamed-chunk-3-1.png)
+![](plots/R/topic-modeling-wordcloud_topics-1.png)
 
 ``` r
 top.topic.words(fit$topics, 10, by.score = TRUE)
@@ -121,7 +121,7 @@ createWordCloud <- function(data, title = "Title", groups) {
 createWordCloud(wdat, "Word Cloud by Topics", 4)
 ```
 
-![](plots/R/topic-modeling-unnamed-chunk-3-2.png)
+![](plots/R/topic-modeling-wordcloud_topics-2.png)
 
 The more frequent words by topic are shown below (both in a table and word cloud). The first topic is mainly about *town hall* and *summer*, the second one on the *Independence Day* celebration. The third and fourth are about the connection between Russia and Trump's administration , and *health care reform and Affordable Care Act (ACA)*.
 
@@ -145,7 +145,7 @@ setorder(d, -d); d
 ggplot(ts, aes(x = topic, y = polarity, group = party, fill = party, color = party)) + geom_point() + geom_line()
 ```
 
-![](plots/R/topic-modeling-unnamed-chunk-4-1.png)
+![](plots/R/topic-modeling-gap_scores-1.png)
 
 References
 ==========
