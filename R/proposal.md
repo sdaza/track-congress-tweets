@@ -59,37 +59,37 @@ dmeta <- rbindlist(dmeta)
 table(is.na(dmeta$sn1)) # missing screen names
 ```
 
-    ##
-    ## FALSE  TRUE
+    ## 
+    ## FALSE  TRUE 
     ##   583     9
 
 ``` r
 summary(dmeta)
 ```
 
-    ##      name             chamber              type
-    ##  Length:592         Length:592         Length:592
-    ##  Class :character   Class :character   Class :character
-    ##  Mode  :character   Mode  :character   Mode  :character
-    ##     party               sn1              sn2
-    ##  Length:592         Length:592         Mode:logical
-    ##  Class :character   Class :character   NA's:592
+    ##      name             chamber              type          
+    ##  Length:592         Length:592         Length:592        
+    ##  Class :character   Class :character   Class :character  
+    ##  Mode  :character   Mode  :character   Mode  :character  
+    ##     party               sn1              sn2         
+    ##  Length:592         Length:592         Mode:logical  
+    ##  Class :character   Class :character   NA's:592      
     ##  Mode  :character   Mode  :character
 
 ``` r
 prop.table(table(dmeta$chamber))
 ```
 
-    ##
-    ##       house       joint      senate
+    ## 
+    ##       house       joint      senate 
     ## 0.798986486 0.003378378 0.197635135
 
 ``` r
 prop.table(table(dmeta$type))
 ```
 
-    ##
-    ##      caucus   committee      member       party
+    ## 
+    ##      caucus   committee      member       party 
     ## 0.023648649 0.060810811 0.908783784 0.006756757
 
 ``` r
@@ -103,8 +103,8 @@ dmeta <- dmeta[type == "member"] # select only members
 table(dmeta$chamber, useNA = "ifany")
 ```
 
-    ##
-    ##  house senate
+    ## 
+    ##  house senate 
     ##    438    100
 
 ``` r
@@ -126,8 +126,8 @@ dmeta[!is.na(screen_name), N := .N, screen_name]
 table(dmeta$N, useNA = "ifany") # no duplicates except for missing cases
 ```
 
-    ##
-    ##    1 <NA>
+    ## 
+    ##    1 <NA> 
     ##  529    9
 
 ``` r
@@ -200,8 +200,8 @@ ts <- dat[, .(N = .N), .(screen_name, party)][party != "I"]
 table(ts$party, useNA = "ifany")
 ```
 
-    ##
-    ##   D   R
+    ## 
+    ##   D   R 
     ## 225 278
 
 ``` r
@@ -262,13 +262,11 @@ wdat[, text := gsub("QT.+", "", text)] # remove quotes
 wdat[, text := gsub("&amp;", "and", text)]
 wdat[, text := gsub("@\\w+", "", text)] # usernames
 wdat[, text := gsub("((f|ht)tp\\S+\\s*|www\\S+\\s*)", "", text)] # URLS
-wdat[, text := gsub("(\n|//)", " ", text, perl = TRUE)] # scapes
+wdat[, text := gsub("(\n|//)", " ", text, perl = TRUE)]
 wdat[, text := gsub("^\\s+|\\s+$", "", text)] # spaces
-#wdat[, text := removeNumbers("text")] # numbers
 wdat[, text := gsub("^ *|(?<= ) | *$", "", text, perl = TRUE)]
 wdat[, text := iconv(text, "latin1", "ASCII", sub="")]
 wdat[, text := tolower(text)]
-
 
 # wdat[, text := iconv(text, "latin1", "UTF-8",sub='')]
 
@@ -301,14 +299,14 @@ wdat[, zpolarity := scale(pol$all$polarity)]
 summary(wdat$polarity)
 ```
 
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     ## -1.7321  0.0000  0.0000  0.1115  0.2774  2.2942
 
 ``` r
 summary(wdat$zpolarity)
 ```
 
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     ## -5.5128 -0.3334 -0.3334  0.0000  0.4960  6.5269
 
 ``` r

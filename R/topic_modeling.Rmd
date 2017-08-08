@@ -4,7 +4,8 @@ output: rmarkdown::github_document
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 ---
 
-I explore tweets content by using the LDA method (Latent Dirichlet Allocation), a probability-based approach to find clustering within documents. The objective is to identify topics and compare [polarity scores](proposal.md) by party affiliation, that is, to  identify topics in which tone is different by party.
+I explore Congress members' tweets using the Latent Dirichlet Allocation
+(LDA) method, a probability-based approach to find clusters in documents. The objective is to identify topics and compare [polarity scores](proposal.md) by party affiliation, that is, to find topics in which tone is different by party.
 
 
 ```{r, eval=FALSE,echo=FALSE, message=FALSE, warning=FALSE}
@@ -38,7 +39,8 @@ Using the processed data from the proposal, I run a LDA model with the `lda` pac
 load("tweet_data.Rdata")
 text <- wdat$text
 
-char_to_remove <- c("m", "w", "t", "th", "c", "rd", "u", "s", "d", "en", "de", "la", "y", "el")
+char_to_remove <- c("m", "w", "t", "th", "c", "rd", "u", "s", "d", "en", "de", "la", "y", "el", "h")
+
 text <- removeNumbers(text)
 text <- removeWords(text, c(stopwords("en"), char_to_remove))
 text <- removePunctuation(text)
@@ -54,17 +56,16 @@ text <- pblapply(text, blank.removal)
 tweets <- lexicalize(text)
 
 wc <- word.counts(tweets$documents, tweets$vocab)
-names(wc)
 tweet.length <-  document.lengths(tweets$documents)
-hist(tweet.length)
 
 ```
 
-Here I run a topic model. After running the model several times, and based on the content of the topics, I decided to identify 7 topics (`k = 4`). This methods seems to be very unstable, I have to look for better alternatives and specifications.
+
+I ran several topic model after finding a solution with cluster/topics that seem reasonable for their content. I decided to identify 4 topics (`k = 4`). The LDA algorithm provide rather unstable results, so I have to look for better alternatives and specifications. The plot below shows that the model reaches convergence after 150 iterations.
 
 ```{r}
 k <- 4
-num.iter <- 100
+num.iter <- 1000
 alpha <- 0.02
 eta <- 0.02
 
@@ -79,10 +80,37 @@ fit <- lda.collapsed.gibbs.sampler(documents = tweets$documents, K = k,
   compute.log.likelihood = TRUE)
 
 plot(fit$log.likelihoods[1,], ylab = "Log likelihood")
-top.topic.words(fit$topics, 7, by.score = TRUE)
+top.topic.words(fit$topics, 20, by.score = TRUE)
 top.topic.documents(fit$document_sums,1)
 ```
 
+The more frequent words by topic are shown below (both in a table and word cloud). The first topic is mainly about *health care reform and Affordable Care Act (ACA)* (7152 tweets). The second is on the *Independence Day* celebration (6813). The third topic focuses on the connection between Russia and Trump's administration (6033), and and the last one on *town hall*.
+
+```{r}
+createWordCloud <- function(data, title = "Title", groups) {
+  corp <- list()
+  for (i in 1:groups) {
+   corp[[i]] <- paste(data[topic == i, text], collapse = " ")
+  }
+
+  all.terms <- unlist(corp)
+  all.corpus <- VCorpus(VectorSource(all.terms))
+  all.tdm <- TermDocumentMatrix(all.corpus,
+                                control = list(weighting = weightSMART,
+                                               removePunctuation = TRUE,
+                                               removeNumbers = TRUE,
+                                                wordLengths=c(0,Inf),
+                                               stopwords = stopwords(kind = "en")))
+  all.tdm.m <- as.matrix(all.tdm)
+  colnames(all.tdm.m) <- 1:groups
+  comparison.cloud(all.tdm.m, random.order = FALSE, max.words = 100)
+  text(x=0.5, y=1.02, title)
+}
+
+createWordCloud(wdat, "Word Cloud by Topics", 4)
+```
+
+Finally, we can see that differences in sentiment scores are higher in topics such *health care reform* and the *Russian meddling*, and tend to converge  on positive topics such as the *Independence Day*. This provide some face validity to idea of using sentiment scores to create a polarization index.
 
 ```{r}
 theta <- t(pbapply(fit$document_sums + alpha, 2, function(x) x/sum(x)))
@@ -90,10 +118,11 @@ wdat[, topic := apply(theta,1,which.max)]
 summary(wdat$topic)
 table(wdat$topic)
 
+# assign scores
 ts <- wdat[party != "I", .(polarity = Mean(polarity)), .(topic, party)]
+# compute absolute differences between parties
 d <- ts[, .(d = abs(diff(polarity))), .(topic)]
-setorder(d, -d)
-d
+setorder(d, -d); d
 
 ggplot(ts, aes(x = topic, y = polarity, group = party, fill = party, color = party)) + geom_point() + geom_line()
 ```

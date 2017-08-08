@@ -181,13 +181,11 @@ wdat[, text := gsub("QT.+", "", text)] # remove quotes
 wdat[, text := gsub("&amp;", "and", text)]
 wdat[, text := gsub("@\\w+", "", text)] # usernames
 wdat[, text := gsub("((f|ht)tp\\S+\\s*|www\\S+\\s*)", "", text)] # URLS
-wdat[, text := gsub("(\n|//)", " ", text, perl = TRUE)] # scapes
+wdat[, text := gsub("(\n|//)", " ", text, perl = TRUE)]
 wdat[, text := gsub("^\\s+|\\s+$", "", text)] # spaces
-#wdat[, text := removeNumbers("text")] # numbers
 wdat[, text := gsub("^ *|(?<= ) | *$", "", text, perl = TRUE)]
 wdat[, text := iconv(text, "latin1", "ASCII", sub="")]
 wdat[, text := tolower(text)]
-
 
 # wdat[, text := iconv(text, "latin1", "UTF-8",sub='')]
 
@@ -284,7 +282,6 @@ createWordCloud(wdat[party == "D"], "Democrats")
 
 ```{r, include = FALSE}
 save(wdat, file = "tweet_data.Rdata")
-
 ```
 
 # Next steps
