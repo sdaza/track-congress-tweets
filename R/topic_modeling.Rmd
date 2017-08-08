@@ -5,7 +5,7 @@ date: "`r format(Sys.time(), '%B %d, %Y')`"
 ---
 
 I explore Congress members' tweets using the Latent Dirichlet Allocation
-(LDA) method, a probability-based approach to find clusters in documents. The objective is to identify topics and compare [polarity scores](proposal.md) by party affiliation, that is, to find topics in which tone is different by party.
+(LDA) method, a probability-based approach to find clusters in documents. The objective is to identify topics and compare [polarity scores](proposal.md) by party affiliation, that is, to find topics in which writer's tone is different by party.
 
 
 ```{r, eval=FALSE,echo=FALSE, message=FALSE, warning=FALSE}
@@ -32,19 +32,19 @@ library(pbapply)
 
 ```
 
-Using the processed data from the proposal, I run a LDA model with the `lda` package in R.
+Using the data from the proposal, I run a LDA model with the `lda` package in R.
 
 ```{r}
 #+ load data and clean tweets
 load("tweet_data.Rdata")
+nrow(wdat)
 text <- wdat$text
 
-char_to_remove <- c("m", "w", "t", "th", "c", "rd", "u", "s", "d", "en", "de", "la", "y", "el", "h")
+#char_to_remove <- c("m", "w", "t", "th", "c", "rd", "u", "s", "d", "en", "de", "la", "y", "el", "h")
 
 text <- removeNumbers(text)
-text <- removeWords(text, c(stopwords("en"), char_to_remove))
+text <- removeWords(text, c(stopwords("en")))
 text <- removePunctuation(text)
-text <- removeWords(text, c(stopwords("en"), char_to_remove))
 
 blank.removal <- function(x) {
   x <- unlist(strsplit(x, " "))
@@ -61,15 +61,15 @@ tweet.length <-  document.lengths(tweets$documents)
 ```
 
 
-I ran several topic model after finding a solution with cluster/topics that seem reasonable for their content. I decided to identify 4 topics (`k = 4`). The LDA algorithm provide rather unstable results, so I have to look for better alternatives and specifications. The plot below shows that the model reaches convergence after 150 iterations.
+I ran several topic models and found that a solution with 4 cluster seems reasonable after exploring word frequencies (`k = 4`). The plot below shows that the model reaches convergence after 200 iterations. However, the LDA algorithm provides rather unstable results. I have to look for alternative algorithms and specifications.
 
 ```{r}
 k <- 4
-num.iter <- 1000
+num.iter <- 500
 alpha <- 0.02
 eta <- 0.02
 
-set.seed(123458)
+set.seed(12345678)
 fit <- lda.collapsed.gibbs.sampler(documents = tweets$documents, K = k,
   vocab = tweets$vocab,
   num.iterations = num.iter,
@@ -80,37 +80,11 @@ fit <- lda.collapsed.gibbs.sampler(documents = tweets$documents, K = k,
   compute.log.likelihood = TRUE)
 
 plot(fit$log.likelihoods[1,], ylab = "Log likelihood")
-top.topic.words(fit$topics, 20, by.score = TRUE)
+top.topic.words(fit$topics, 10, by.score = TRUE)
 top.topic.documents(fit$document_sums,1)
 ```
 
-The more frequent words by topic are shown below (both in a table and word cloud). The first topic is mainly about *health care reform and Affordable Care Act (ACA)* (7152 tweets). The second is on the *Independence Day* celebration (6813). The third topic focuses on the connection between Russia and Trump's administration (6033), and and the last one on *town hall*.
-
-```{r}
-createWordCloud <- function(data, title = "Title", groups) {
-  corp <- list()
-  for (i in 1:groups) {
-   corp[[i]] <- paste(data[topic == i, text], collapse = " ")
-  }
-
-  all.terms <- unlist(corp)
-  all.corpus <- VCorpus(VectorSource(all.terms))
-  all.tdm <- TermDocumentMatrix(all.corpus,
-                                control = list(weighting = weightSMART,
-                                               removePunctuation = TRUE,
-                                               removeNumbers = TRUE,
-                                                wordLengths=c(0,Inf),
-                                               stopwords = stopwords(kind = "en")))
-  all.tdm.m <- as.matrix(all.tdm)
-  colnames(all.tdm.m) <- 1:groups
-  comparison.cloud(all.tdm.m, random.order = FALSE, max.words = 100)
-  text(x=0.5, y=1.02, title)
-}
-
-createWordCloud(wdat, "Word Cloud by Topics", 4)
-```
-
-Finally, we can see that differences in sentiment scores are higher in topics such *health care reform* and the *Russian meddling*, and tend to converge  on positive topics such as the *Independence Day*. This provide some face validity to idea of using sentiment scores to create a polarization index.
+The more frequent words by topic are shown below (both in a table and word cloud). The first topic is mainly about *town hall* and *summer*, the second one on the *Independence Day* celebration. The third and fourth are about the connection between Russia and Trump's administration , and *health care reform and Affordable Care Act (ACA)*.
 
 ```{r}
 theta <- t(pbapply(fit$document_sums + alpha, 2, function(x) x/sum(x)))
@@ -126,6 +100,33 @@ setorder(d, -d); d
 
 ggplot(ts, aes(x = topic, y = polarity, group = party, fill = party, color = party)) + geom_point() + geom_line()
 ```
+
+```{r, warning=FALSE}
+createWordCloud <- function(data, title = "Title", groups) {
+  corp <- list()
+  for (i in 1:groups) {
+   corp[[i]] <- paste(data[topic == i, text], collapse = " ")
+  }
+
+  all.terms <- unlist(corp)
+  all.corpus <- VCorpus(VectorSource(all.terms))
+  all.tdm <- TermDocumentMatrix(all.corpus,
+                                control = list(weighting = weightSMART,
+                                               removePunctuation = TRUE,
+                                               removeNumbers = TRUE,
+                                               stopwords = stopwords(kind = "en")))
+  all.tdm.m <- as.matrix(all.tdm)
+  colnames(all.tdm.m) <- as.character(1:groups)
+  comparison.cloud(all.tdm.m, random.order = FALSE, max.words = 100)
+  text(x=0.5, y=1.02, title)
+}
+
+createWordCloud(wdat, "Word Cloud by Topics", 4)
+
+```
+
+Finally, we can see that differences in sentiment scores are higher in topics such *health care reform* and the *Russian meddling*, and tend to converge on positive topics such the *Independence Day*. This provide some face validity to the idea of using sentiment scores to create a polarization index. Different topic modeling algorithms should be used, though, to assess the robustness of the method.
+
 
 # References
 
