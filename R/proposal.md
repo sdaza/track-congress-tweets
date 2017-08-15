@@ -1,4 +1,4 @@
-Tracking Congress Political Polarization with Tweeter
+Tracking Congress Political Polarization with Twitter
 ================
 August 08, 2017
 
