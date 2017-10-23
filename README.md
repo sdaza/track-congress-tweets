@@ -11,7 +11,7 @@ The goals of this project are:
 
 1.  To track the level of positivity and negativity of daily Congress members tweets using **sentiment analysis**.
 2.  To create an index of polarization from Congress tweets. After adjusting subjectivity lexicons and assess text classification, to define a method to classify tweets every day and create a polarization index.
-3.  To explore the association between positivity and polarization indexes with outcomes such as Congress approval ratings and proportion of bill passed.
+3.  To explore the association between positivity and polarization indexes with outcomes such as Congress approval ratings and proportion of bills passed.
 
 # Data
 
